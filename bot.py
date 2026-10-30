@@ -172,16 +172,28 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if mode == "ask_ai":
-        answer = (
-            "🤖 KBReal AI — የጥያቄህ ትንተና\\n\\n"
-            f"📝 ጥያቄ፦ {topic}\\n\\n"
-            "💡 የሚጠቅም ምክር፦\\n"
-            "1. ጥያቄውን በግልጽ አረጋግጥ።\\n"
-            "2. ከታመኑ ምንጮች መረጃ ፈልግ።\\n"
-            "3. መልስህን አጭርና በማስረጃ የተደገፈ አድርግ።\\n\\n"
-            "ℹ️ ይህ ከኢንተርኔት የሚማር እውነተኛ AI ገና አይደለም፤ "
-            "የመጀመሪያ የኦፍላይን እገዛ ነው።"
-        )
+        q = topic.lower()
+        knowledge = [
+            (["video", "ቪዲዮ"], "🎬 ቪዲዮ ሀሳብ፦\\n1. በመጀመሪያ 3 ሰከንድ ተመልካችን የሚስብ ጥያቄ ጠይቅ።\\n2. አንድ ግልጽ ርዕስ ምረጥ።\\n3. ምስል፣ ድምፅና ንዑስ ጽሑፍ አጣምር።\\n4. መጨረሻ ላይ አስተያየት እንዲሰጡ ጠይቅ።"),
+            (["caption", "ርዕስ", "ጽሑፍ"], "✍️ Caption ምክር፦\\nአጭር አስደሳች መጀመሪያ ጻፍ፣ ዋናውን መልዕክት ግልጽ አድርግ፣ ተገቢ ሃሽታጎችን ተጠቀም።"),
+            (["script", "ስክሪፕት"], "🎞️ Script አወቃቀር፦\\n1. መግቢያ፦ ተመልካችን የሚስብ ጥያቄ።\\n2. ዋና ክፍል፦ 2–3 ጠቃሚ ነጥቦች።\\n3. መደምደሚያ፦ አጭር ማጠቃለያና ጥሪ።"),
+            (["grow", "followers", "ተከታይ", "ፎሎወር"], "📈 የተመልካች ማሳደግ ምክር፦\\nበቋሚነት የራስህን ይዘት አቅርብ፣ ከአስተያየቶች ጋር ተገናኝ፣ የቪዲዮ ውጤትህን ተከታተል።"),
+            (["idea", "ሀሳብ"], "💡 የይዘት ሀሳብ፦\\nአንድ ችግኝ ምረጥ፣ ቀላል መፍትሄ አሳይ፣ በአጭር ቪዲዮ አቅርብ።"),
+        ]
+        answer = "🤖 KBReal Offline Helper\\n\\n"
+        found = False
+        for words, advice in knowledge:
+            if any(word in q for word in words):
+                answer += f"📝 ጥያቄ፦ {topic}\\n\\n{advice}"
+                found = True
+                break
+        if not found:
+            answer += (
+                f"📝 ጥያቄ፦ {topic}\\n\\n"
+                "ይህን ጥያቄ በተሻለ ለመመለስ ተጨማሪ ዝርዝር አስፈልጋል።\\n"
+                "ለVideo Ideas፣ Caption፣ Script ወይም የCreator ምክር ጥያቄ ላክ።"
+            )
+        answer += "\\n\\nℹ️ ይህ Offline የመረጃ ስርዓት ነው፤ እውነተኛ AI model አይደለም።"
         await update.effective_message.reply_text(
             answer, reply_markup=main_keyboard()
         )
