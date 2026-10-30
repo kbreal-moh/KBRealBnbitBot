@@ -45,6 +45,7 @@ def user_record(user_id):
 def main_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🎬 Video Ideas", callback_data="ideas")],
+        [InlineKeyboardButton("🤖 Ask AI", callback_data="ask_ai")],
         [InlineKeyboardButton("✍️ Caption Maker", callback_data="caption")],
         [InlineKeyboardButton("🎞️ Video Script", callback_data="script")],
         [InlineKeyboardButton("🎥 Create Video", callback_data="video")],
@@ -80,6 +81,14 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     action = query.data
     print("BUTTON CLICKED:", action, flush=True)
+
+    if action == "ask_ai":
+        context.user_data["mode"] = "ask_ai"
+        await query.message.reply_text(
+            "🤖 ጥያቄህን እዚህ ጻፍ።\\n"
+            "AI ሲገናኝ መልስና ጠቃሚ ምክር ይሰጥሃል።"
+        )
+        return
 
     if action == "voice_male":
         context.user_data["voice"] = "am-ET-AmehaNeural"
@@ -160,6 +169,22 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     topic = topic.replace("ብለህ ላክ።", "").strip()
 
     if not topic:
+        return
+
+    if mode == "ask_ai":
+        answer = (
+            "🤖 KBReal AI — የጥያቄህ ትንተና\\n\\n"
+            f"📝 ጥያቄ፦ {topic}\\n\\n"
+            "💡 የሚጠቅም ምክር፦\\n"
+            "1. ጥያቄውን በግልጽ አረጋግጥ።\\n"
+            "2. ከታመኑ ምንጮች መረጃ ፈልግ።\\n"
+            "3. መልስህን አጭርና በማስረጃ የተደገፈ አድርግ።\\n\\n"
+            "ℹ️ ይህ ከኢንተርኔት የሚማር እውነተኛ AI ገና አይደለም፤ "
+            "የመጀመሪያ የኦፍላይን እገዛ ነው።"
+        )
+        await update.effective_message.reply_text(
+            answer, reply_markup=main_keyboard()
+        )
         return
 
     if mode == "video":
